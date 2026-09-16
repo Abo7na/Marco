@@ -3,129 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الألعاب والتعدين الاحترافية</title>
+    <title>1xCasino - Live Gaming Arena</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; transition: 0.2s; }
-        body { font-family: Tahoma, sans-serif; background: #0b0f19; color: #fff; margin: 0; padding: 10px; text-align: center; }
-        h2 { font-size: 18px; margin-bottom: 10px; color: #38bdf8; }
+        :root {
+            --bg-main: #0e1217;
+            --bg-card: #161b22;
+            --accent-gold: #f3ba2f;
+            --accent-green: #0ecb81;
+            --accent-red: #f6465d;
+            --text-main: #eaecef;
+            --text-muted: #848e9c;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg-main); color: var(--text-main); margin: 0; padding: 10px; text-align: center; }
         
-        /* شريط التنقل */
-        .tab-bar { display: flex; overflow-x: auto; gap: 5px; background: #1e293b; padding: 8px; border-radius: 12px; margin-bottom: 15px; white-space: nowrap; scrollbar-width: none; }
-        .tab-bar::-webkit-scrollbar { display: none; }
-        .tab-btn { background: none; border: none; color: #94a3b8; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 8px; font-weight: bold; }
-        .tab-btn.active { background: #38bdf8; color: #0f172a; }
+        /* الهيدر ورصيد الحساب */
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 10px 15px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 12px; }
+        .balance-box { font-size: 16px; font-weight: bold; color: var(--accent-gold); }
         
+        /* شريط الألعاب الأفقي (مثل 1xBet) */
+        .games-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px; scrollbar-width: none; }
+        .games-nav::-webkit-scrollbar { display: none; }
+        .game-tab { background: var(--bg-card); border: 1px solid #30363d; color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .game-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
+
         .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .section.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: #1e293b; padding: 15px; border-radius: 14px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .card { background: var(--bg-card); border: 1px solid #30363d; border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
         
-        /* أزرار تفاعلية */
-        button.action-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 15px; cursor: pointer; margin-top: 10px; font-weight: bold; width: 100%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-        button.action-btn:active { transform: scale(0.97); background: #1d4ed8; }
+        /* لوحة التحكم بالرهان */
+        .bet-control { display: flex; gap: 10px; margin: 12px 0; align-items: center; justify-content: center; }
+        .bet-input { background: #0b0e14; border: 1px solid #30363d; color: #fff; padding: 10px; border-radius: 8px; width: 100px; text-align: center; font-size: 16px; font-weight: bold; }
+        .bet-btn-quick { background: #21262d; border: 1px solid #30363d; color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        
+        button.action-btn { background: linear-gradient(135deg, #f3ba2f, #d49e1a); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 15px rgba(243, 186, 47, 0.3); }
+        button.action-btn:active { transform: scale(0.98); }
 
-        /* شريط الرصيد العام */
-        .global-score { background: #0f172a; border: 1px solid #38bdf8; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 18px; font-weight: bold; color: #f59e0b; }
+        /* شاشة العرض والألعاب الحية */
+        .screen-box { background: #0b0e14; border: 2px solid #30363d; border-radius: 12px; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; position: relative; overflow: hidden; margin-bottom: 10px; }
+        
+        /* الطائرة (Aviator Style) */
+        #aviator-plane { position: absolute; font-size: 40px; transition: 0.1s linear; left: 20px; bottom: 20px; }
+        
+        /* السلوتس الحقيقي */
+        .slots-container { display: flex; justify-content: center; gap: 10px; font-size: 40px; }
+        .slot-reel { background: #161b22; border: 1px solid #30363d; padding: 10px 20px; border-radius: 8px; min-width: 70px; }
 
-        /* التعدين */
-        .coin { width: 110px; height: 110px; background: radial-gradient(circle, #f59e0b, #d97706); border-radius: 50%; margin: 15px auto; display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); user-select: none; }
-        .coin:active { transform: scale(0.92); }
-
-        /* شبكة المناجم والألعاب المصغرة */
-        .grid-game { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 300px; margin: 10px auto; }
-        .mine-cell { background: #334155; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; user-select: none; }
-        .mine-cell:active { background: #475569; }
-
-        .display-box { font-size: 22px; background: #0f172a; padding: 12px; border-radius: 8px; margin: 10px 0; border: 1px solid #475569; letter-spacing: 2px; }
-        .row-btns { display: flex; gap: 8px; margin-top: 10px; }
+        /* سجل النتائج والـ History */
+        .history-bar { display: flex; gap: 5px; overflow-x: auto; margin-top: 10px; padding: 5px 0; }
+        .history-item { background: #21262d; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
-    <h2>⚡ منصة الألعاب والتعدين المتكاملة</h2>
-    
-    <!-- لوحة الرصيد العام المشتركة -->
-    <div class="global-score">
-        💰 رصيدك الإجمالي: <span id="balance">100</span> نقطة
+    <div class="header">
+        <div>🎲 <b>1xCasino Live</b></div>
+        <div class="balance-box">💰 <span id="balance">1000.00</span> $</div>
     </div>
 
-    <!-- شريط الأقسام -->
-    <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('clicker', event)">🪙 التعدين</button>
-        <button class="tab-btn" onclick="switchTab('crash', event)">✈️ الطائرة</button>
-        <button class="tab-btn" onclick="switchTab('roulette', event)">🎡 الروليت</button>
-        <button class="tab-btn" onclick="switchTab('slots', event)">🎰 السلوتس</button>
-        <button class="tab-btn" onclick="switchTab('blackjack', event)">🃏 بلاك جاك</button>
-        <button class="tab-btn" onclick="switchTab('scratch', event)">🎫 الكشط</button>
-        <button class="tab-btn" onclick="switchTab('mines', event)">💣 المناجم</button>
+    <!-- شريط الألعاب -->
+    <div class="games-nav">
+        <button class="game-tab active" onclick="switchGame('aviator', event)">✈️ Aviator</button>
+        <button class="game-tab" onclick="switchGame('slots', event)">🎰 777 Slots</button>
+        <button class="game-tab" onclick="switchGame('roulette', event)">🎡 Roulette</button>
+        <button class="game-tab" onclick="switchGame('mines', event)">💣 Mines</button>
     </div>
 
-    <!-- 1. التعدين -->
-    <div id="clicker" class="section active">
+    <!-- 1. لعبة الطائرة (Aviator) -->
+    <div id="aviator" class="section active">
         <div class="card">
-            <h3>نظام التعدين السريع</h3>
-            <p>الطاقة المتاحة: <span id="energy" style="color: #38bdf8; font-weight: bold;">1000</span> / 1000</p>
-            <div class="coin" onclick="tapCoin()">🪙</div>
-        </div>
-    </div>
-
-    <!-- 2. الطائرة -->
-    <div id="crash" class="section">
-        <div class="card">
-            <h3>✈️ لعبة الطائرة (Crash)</h3>
-            <div class="display-box" id="crash-mult" style="color: #10b981;">1.00x</div>
-            <button class="action-btn" onclick="playCrash()">بدء الرهان وسحب الأرباح (تكلفة 10)</button>
-        </div>
-    </div>
-
-    <!-- 3. الروليت -->
-    <div id="roulette" class="section">
-        <div class="card">
-            <h3>🎡 الروليت الملكية</h3>
-            <p>اختر اللون للرهان (10 نقاط):</p>
-            <div class="row-btns">
-                <button class="action-btn" style="background:#dc2626;" onclick="playRoulette('red')">🔴 أحمر</button>
-                <button class="action-btn" style="background:#334155; border:1px solid #64748b;" onclick="playRoulette('black')">⚫ أسود</button>
+            <div class="screen-box" id="aviator-screen">
+                <div id="aviator-mult" style="color: var(--accent-green);">1.00x</div>
+                <div id="aviator-plane">✈️</div>
             </div>
-            <p id="roulette-result" style="margin-top:10px; font-weight:bold;"></p>
+            <div class="bet-control">
+                <span>الرهان:</span>
+                <input type="number" id="aviator-bet" class="bet-input" value="10">
+                <button class="bet-btn-quick" onclick="setBet('aviator-bet', 10)">10</button>
+                <button class="bet-btn-quick" onclick="setBet('aviator-bet', 50)">50</button>
+                <button class="bet-btn-quick" onclick="setBet('aviator-bet', 100)">100</button>
+            </div>
+            <button class="action-btn" id="aviator-btn" onclick="startAviator()">إقلاع الطائرة (رهان)</button>
         </div>
     </div>
 
-    <!-- 4. السلوتس -->
+    <!-- 2. السلوتس (Slots) -->
     <div id="slots" class="section">
         <div class="card">
-            <h3>🎰 ماكينة الحظ</h3>
-            <div class="display-box" id="slots-display">🍋 🍒 🔔</div>
-            <button class="action-btn" onclick="playSlots()">تدوير الماكينة (تكلفة 15)</button>
+            <div class="screen-box">
+                <div class="slots-container">
+                    <div class="slot-reel" id="r1">🍋</div>
+                    <div class="slot-reel" id="r2">🍒</div>
+                    <div class="slot-reel" id="r3">💎</div>
+                </div>
+            </div>
+            <div class="bet-control">
+                <span>الرهان:</span>
+                <input type="number" id="slots-bet" class="bet-input" value="20">
+            </div>
+            <button class="action-btn" style="background:linear-gradient(135deg, #0ecb81, #069c61); color:#fff;" onclick="playSlots()">تدوير الحظ (Spin)</button>
         </div>
     </div>
 
-    <!-- 5. بلاك جاك -->
-    <div id="blackjack" class="section">
+    <!-- 3. الروليت (Roulette) -->
+    <div id="roulette" class="section">
         <div class="card">
-            <h3>🃏 بلاك جاك مبسط</h3>
-            <p>مجموع أوراقك: <span id="bj-score" style="color: #38bdf8; font-size: 20px;">0</span></p>
-            <button class="action-btn" onclick="playBlackjack()">اسحب ورقة وتحدى (تكلفة 20)</button>
+            <div class="screen-box" id="roulette-wheel" style="color: var(--accent-gold);">
+                🎡 جاهز للتدوير
+            </div>
+            <div class="bet-control">
+                <input type="number" id="roul-bet" class="bet-input" value="25">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="action-btn" style="background:var(--accent-red); color:#fff;" onclick="playRoulette('red')">رهان أحمر (x2)</button>
+                <button class="action-btn" style="background:#21262d; color:#fff; border:1px solid #30363d;" onclick="playRoulette('black')">رهان أسود (x2)</button>
+            </div>
         </div>
     </div>
 
-    <!-- 6. كشط الكروت -->
-    <div id="scratch" class="section">
-        <div class="card">
-            <h3>🎫 كشط الكروت السريعة</h3>
-            <div class="display-box" id="scratch-box">❓ ❓ ❓</div>
-            <button class="action-btn" onclick="playScratch()">كشط الكارت الآن (تكلفة 10)</button>
-        </div>
-    </div>
-
-    <!-- 7. المناجم -->
+    <!-- 4. المناجم (Mines) -->
     <div id="mines" class="section">
         <div class="card">
-            <h3>💣 منجم الجواهر</h3>
-            <div class="grid-game" id="mines-grid"></div>
-            <p style="font-size: 12px; color: #94a3b8; margin-top:8px;">اضغط على الخلايا لاكتشاف الجواهر!</p>
+            <p style="font-size: 13px; color: var(--text-muted);">تجنب القنابل واجمع المضاعفات الحقيقية!</p>
+            <div id="mines-grid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px; max-width:280px; margin:10px auto;"></div>
+            <button class="action-btn" onclick="resetMines()">إعادة تعيين المنجم</button>
         </div>
     </div>
 
@@ -133,144 +137,142 @@
         let tg = window.Telegram.WebApp;
         try { tg.expand(); } catch(e){}
 
-        let balance = 100;
-
-        function updateBalance(amount) {
-            balance += amount;
-            document.getElementById('balance').innerText = balance;
+        let balance = 1000.00;
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
         }
 
-        function haptic(type = 'light') {
-            try {
-                if (tg && tg.HapticFeedback) {
-                    if(type === 'success') tg.HapticFeedback.notificationOccurred('success');
-                    else if(type === 'medium') tg.HapticFeedback.impactOccurred('medium');
-                    else tg.HapticFeedback.impactOccurred('light');
-                }
-            } catch(e){}
-        }
-
-        // تبديل الأقسام
-        function switchTab(tabId, event) {
-            haptic('light');
+        function switchGame(gameId, event) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(gameId).classList.add('active');
             event.target.classList.add('active');
         }
 
-        // 1. التعدين
-        let energy = 1000;
-        function tapCoin() {
-            if (energy > 0) {
-                energy -= 1;
-                updateBalance(1);
-                document.getElementById('energy').innerText = energy;
-                haptic('light');
-            }
+        function setBet(inputId, val) {
+            document.getElementById(inputId).value = val;
         }
 
-        // 2. الطائرة
-        function playCrash() {
-            if (balance < 10) { alert("رصيدك غير كافٍ!"); return; }
-            updateBalance(-10);
-            haptic('medium');
-            let mult = (Math.random() * 3 + 1).toFixed(2);
-            document.getElementById('crash-mult').innerText = mult + "x";
-            let win = Math.floor(10 * mult);
-            updateBalance(win);
-            alert("مبروك ربحت: " + win + " نقطة!");
-        }
+        // 1. منطق لعبة الطائرة الواقعية (Aviator)
+        let aviatorInterval = null;
+        function startAviator() {
+            let bet = parseFloat(document.getElementById('aviator-bet').value);
+            if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
+            balance -= bet;
+            updateUI();
 
-        // 3. الروليت
-        function playRoulette(choice) {
-            if (balance < 10) { alert("رصيدك غير كافٍ!"); return; }
-            updateBalance(-10);
-            haptic('medium');
-            let colors = ['red', 'black', 'red'];
-            let res = colors[Math.floor(Math.random() * colors.length)];
-            let resText = res === 'red' ? '🔴 أحمر' : '⚫ أسود';
-            if (res === choice) {
-                updateBalance(20);
-                document.getElementById('roulette-result').innerHTML = `<span style="color:#10b981">النتيجة ${resText}: ربحت 20 نقطة!</span>`;
-            } else {
-                document.getElementById('roulette-result').innerHTML = `<span style="color:#ef4444">النتيجة ${resText}: خسرت الرهان!</span>`;
-            }
-        }
+            let btn = document.getElementById('aviator-btn');
+            btn.innerText = "سحب الأرباح (Cash Out)";
+            btn.style.background = "var(--accent-green)";
+            
+            let mult = 1.00;
+            let multBox = document.getElementById('aviator-mult');
+            let plane = document.getElementById('aviator-plane');
+            let crashPoint = (Math.random() * 3 + 1.1).toFixed(2); // نقطة الانهيار العشوائية
 
-        // 4. السلوتس
-        function playSlots() {
-            if (balance < 15) { alert("رصيدك غير كافٍ!"); return; }
-            updateBalance(-15);
-            haptic('medium');
-            let symbols = ['🍋', '🍒', '🔔', '⭐', '💎'];
-            let s1 = symbols[Math.floor(Math.random()*symbols.length)];
-            let s2 = symbols[Math.floor(Math.random()*symbols.length)];
-            let s3 = symbols[Math.floor(Math.random()*symbols.length)];
-            document.getElementById('slots-display').innerText = `${s1} ${s2} ${s3}`;
-            if (s1 === s2 && s2 === s3) {
-                updateBalance(50);
-                alert("🎉 مطابقة كبرى! ربحت 50 نقطة!");
-            } else {
-                alert("حظ أوفر المرة القادمة.");
-            }
-        }
-
-        // 5. بلاك جاك
-        function playBlackjack() {
-            if (balance < 20) { alert("رصيدك غير كافٍ!"); return; }
-            updateBalance(-20);
-            haptic('medium');
-            let pScore = Math.floor(Math.random() * 8) + 15; // بين 15 و 22
-            document.getElementById('bj-score').innerText = pScore;
-            if (pScore === 21) {
-                updateBalance(50);
-                alert("Blackjack! ربحت 50 نقطة!");
-            } else if (pScore > 21) {
-                alert("تجاوزت ال21! خسرت الرهان.");
-            } else {
-                updateBalance(30);
-                alert("مجموعك " + pScore + " - ربحت 30 نقطة!");
-            }
-        }
-
-        // 6. الكشط
-        function playScratch() {
-            if (balance < 10) { alert("رصيدك غير كافٍ!"); return; }
-            updateBalance(-10);
-            haptic('medium');
-            let prizes = [5, 10, 20, 50, 0];
-            let prize = prizes[Math.floor(Math.random()*prizes.length)];
-            document.getElementById('scratch-box').innerText = `🎁 ${prize} نقطة`;
-            if (prize > 0) {
-                updateBalance(prize);
-                alert("مبروك كشطت جائزة بقيمة " + prize + " نقطة!");
-            } else {
-                alert("الكارت فارغ، حظ أوفر!");
-            }
-        }
-
-        // 7. المناجم
-        const minesGrid = document.getElementById('mines-grid');
-        for (let i = 0; i < 25; i++) {
-            let cell = document.createElement('div');
-            cell.className = 'mine-cell';
-            cell.innerText = '❓';
-            cell.onclick = () => {
-                haptic('success');
-                let isGem = Math.random() > 0.3;
-                if (isGem) {
-                    cell.innerText = '💎';
-                    cell.style.background = '#065f46';
-                    updateBalance(5);
-                } else {
-                    cell.innerText = '💣';
-                    cell.style.background = '#7f1d1d';
-                    updateBalance(-5);
+            let cashedOut = false;
+            btn.onclick = function() {
+                if (!cashedOut && mult < crashPoint) {
+                    cashedOut = true;
+                    let win = bet * mult;
+                    balance += win;
+                    updateUI();
+                    alert(`✅ تم السحب بنجاح! ربحت: ${win.toFixed(2)}$`);
+                    resetAviatorBtn();
                 }
             };
-            minesGrid.appendChild(cell);
+
+            aviatorInterval = setInterval(() => {
+                mult += 0.05;
+                multBox.innerText = mult.toFixed(2) + "x";
+                plane.style.left = Math.min(220, (mult * 40)) + "px";
+                plane.style.bottom = Math.min(110, (mult * 25)) + "px";
+
+                if (mult >= crashPoint && !cashedOut) {
+                    clearInterval(aviatorInterval);
+                    multBox.innerHTML = "<span style='color:var(--accent-red)'>طارت الطائرة! (Crash)</span>";
+                    resetAviatorBtn();
+                }
+            }, 100);
         }
+
+        function resetAviatorBtn() {
+            clearInterval(aviatorInterval);
+            let btn = document.getElementById('aviator-btn');
+            btn.innerText = "إقلاع الطائرة (رهان)";
+            btn.style.background = "var(--accent-gold)";
+            btn.onclick = startAviator;
+        }
+
+        // 2. سلوتس كازينو حقيقي
+        function playSlots() {
+            let bet = parseFloat(document.getElementById('slots-bet').value);
+            if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
+            balance -= bet;
+            updateUI();
+
+            let symbols = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
+            let r1 = symbols[Math.floor(Math.random()*symbols.length)];
+            let r2 = symbols[Math.floor(Math.random()*symbols.length)];
+            let r3 = symbols[Math.floor(Math.random()*symbols.length)];
+
+            document.getElementById('r1').innerText = r1;
+            document.getElementById('r2').innerText = r2;
+            document.getElementById('r3').innerText = r3;
+
+            if (r1 === r2 && r2 === r3) {
+                let win = bet * 10;
+                balance += win;
+                updateUI();
+                alert(`🎉 مبروك! مطابقة كبرى ربحت ${win}$`);
+            }
+        }
+
+        // 3. روليت كازينو
+        function playRoulette(color) {
+            let bet = parseFloat(document.getElementById('roul-bet').value);
+            if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
+            balance -= bet;
+            updateUI();
+
+            let wheel = document.getElementById('roulette-wheel');
+            wheel.innerText = "🎡 تدور العجلة...";
+
+            setTimeout(() => {
+                let res = Math.random() > 0.5 ? 'red' : 'black';
+                let resText = res === 'red' ? '🔴 أحمر' : '⚫ أسود';
+                wheel.innerHTML = `النتيجة: ${resText}`;
+                if (res === color) {
+                    balance += (bet * 2);
+                    updateUI();
+                }
+            }, 1000);
+        }
+
+        // 4. المناجم الاحترافية
+        const minesGrid = document.getElementById('mines-grid');
+        function resetMines() {
+            minesGrid.innerHTML = '';
+            for(let i=0; i<20; i++) {
+                let cell = document.createElement('div');
+                cell.className = 'slot-reel';
+                cell.style.height = '42px';
+                cell.style.fontSize = '16px';
+                cell.style.display = 'flex';
+                cell.style.alignItems = 'center';
+                cell.style.justifyContent = 'center';
+                cell.style.cursor = 'pointer';
+                cell.innerText = '❓';
+                cell.onclick = () => {
+                    let isGem = Math.random() > 0.35;
+                    cell.innerText = isGem ? '💎' : '💣';
+                    cell.style.background = isGem ? '#065f46' : '#7f1d1d';
+                    if(isGem) { balance += 5; updateUI(); }
+                };
+                minesGrid.appendChild(cell);
+            }
+        }
+        resetMines();
     </script>
 </body>
 </html>
