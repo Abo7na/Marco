@@ -1,1 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الألعاب والتعدين المتكاملة</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #0b0f19; color: #fff; margin: 0; padding: 15px; text-align: center; }
+        .tab-bar { display: flex; justify-content: space-around; background: #1e293b; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+        .tab-btn { background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+        button.action-btn { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 15px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        button.action-btn:active { transform: scale(0.96); }
+        .coin { width: 110px; height: 110px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 50%; margin: 15px auto; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+        .grid-game { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 280px; margin: 10px auto; }
+        .mine-cell { background: #334155; height: 50px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
 
+    <h2>⚡ منصة الألعاب والتعدين الاحترافية</h2>
+
+    <!-- شريط التنقل بين الأقسام -->
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('clicker')">التعدين</button>
+        <button class="tab-btn" onclick="switchTab('crash')">الطائرة</button>
+        <button class="tab-btn" onclick="switchTab('roulette')">الروليت</button>
+        <button class="tab-btn" onclick="switchTab('slots')">السلوتس</button>
+        <button class="tab-btn" onclick="switchTab('blackjack')">بلاك جاك</button>
+        <button class="tab-btn" onclick="switchTab('scratch')">الكشط</button>
+        <button class="tab-btn" onclick="switchTab('mines')">المناجم</button>
+    </div>
+
+    <!-- 1. قسم التعدين بالنقر -->
+    <div id="clicker" class="section active">
+        <div class="card">
+            <h3>نظام التعدين السريع (Tap Game)</h3>
+            <p>الطاقة: <span id="energy">1000</span> / 1000</p>
+            <div class="coin" onclick="tapCoin()">🪙</div>
+            <p>النقاط: <span id="score">0</span></p>
+        </div>
+    </div>
+
+    <!-- 2. لعبة الطائرة (Crash) -->
+    <div id="crash" class="section">
+        <div class="card">
+            <h3>✈️ لعبة الطائرة (Crash Aviator)</h3>
+            <p>المضاعف: <span id="crash-mult" style="color: #10b981; font-size: 22px;">1.00x</span></p>
+            <button class="action-btn" onclick="sendGameAction('crash', 10)">رهان 10 نقاط وسحب</button>
+        </div>
+    </div>
+
+    <!-- 3. لعبة الروليت (Roulette) -->
+    <div id="roulette" class="section">
+        <div class="card">
+            <h3>🎡 الروليت الملكية</h3>
+            <p>اختر اللون الأحمر أو الأسود وضع رهانك:</p>
+            <button class="action-btn" style="background:#dc2626;" onclick="sendGameAction('roulette_red', 10)">أحمر (10)</button>
+            <button class="action-btn" style="background:#000;" onclick="sendGameAction('roulette_black', 10)">أسود (10)</button>
+        </div>
+    </div>
+
+    <!-- 4. لعبة السلوتس (Slots) -->
+    <div id="slots" class="section">
+        <div class="card">
+            <h3>🎰 ماكينة السلوتس الاحترافية</h3>
+            <div style="font-size: 30px; margin: 15px;" id="slots-display">🍋 🍒 🔔</div>
+            <button class="action-btn" onclick="sendGameAction('slots', 15)">تدوير الماكينة (15)</button>
+        </div>
+    </div>
+
+    <!-- 5. لعبة البلاك جاك (Blackjack) -->
+    <div id="blackjack" class="section">
+        <div class="card">
+            <h3>🃏 بلاك جاك (21)</h3>
+            <p>مجموع أوراقك: <span id="bj-score">18</span></p>
+            <button class="action-btn" onclick="sendGameAction('blackjack', 20)">بدء الجولة والتحدي</button>
+        </div>
+    </div>
+
+    <!-- 6. لعبة كشط الكروت (Scratch Cards) -->
+    <div id="scratch" class="section">
+        <div class="card">
+            <h3>🎫 كشط الكروت السريعة</h3>
+            <p>امسح الكارت لمعرفة الجائزة الخفية:</p>
+            <button class="action-btn" onclick="sendGameAction('scratch', 10)">كشط الكارت الآن</button>
+        </div>
+    </div>
+
+    <!-- 7. لعبة منجم القنابل (Mines) -->
+    <div id="mines" class="section">
+        <div class="card">
+            <h3>💣 منجم القنابل (Mines 5x5)</h3>
+            <div class="grid-game" id="mines-grid">
+                <!-- توليد شبكة المربعات -->
+            </div>
+            <button class="action-btn" onclick="sendGameAction('mines', 10)">رهان وبدء التعدين</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let score = 0;
+        let energy = 1000;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function tapCoin() {
+            if (energy > 0) {
+                energy -= 1;
+                score += 1;
+                document.getElementById('energy').innerText = energy;
+                document.getElementById('score').innerText = score;
+            }
+        }
+
+        // بناء شبكة المناجم 5x5 بصرياً
+        const minesGrid = document.getElementById('mines-grid');
+        for (let i = 0; i < 25; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'mine-cell';
+            cell.innerText = '❓';
+            cell.onclick = () => { cell.innerText = '💎'; };
+            minesGrid.appendChild(cell);
+        }
+
+        // إرسال تفاصيل اللعبة ونتائج الرهان للباك آند عبر تليجرام آبي
+        function sendGameAction(actionName, betAmount) {
+            let payload = JSON.stringify({ action: actionName, bet: betAmount });
+            tg.sendData(payload);
+        }
+    </script>
+</body>
+</html>
