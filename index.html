@@ -3,133 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1xCasino - Live Gaming Arena</title>
+    <title>1xBet Pro Casino Arena</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-main: #0e1217;
-            --bg-card: #161b22;
-            --accent-gold: #f3ba2f;
-            --accent-green: #0ecb81;
-            --accent-red: #f6465d;
-            --text-main: #eaecef;
-            --text-muted: #848e9c;
+            --bg-base: #090d16;
+            --bg-panel: #131b2e;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
         }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--bg-main); color: var(--text-main); margin: 0; padding: 10px; text-align: center; }
-        
-        /* الهيدر ورصيد الحساب */
-        .header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 10px 15px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 12px; }
-        .balance-box { font-size: 16px; font-weight: bold; color: var(--accent-gold); }
-        
-        /* شريط الألعاب الأفقي (مثل 1xBet) */
-        .games-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px; scrollbar-width: none; }
-        .games-nav::-webkit-scrollbar { display: none; }
-        .game-tab { background: var(--bg-card); border: 1px solid #30363d; color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .game-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
+        body { background: var(--bg-base); color: var(--text-main); margin: 0; padding: 10px; text-align: center; }
+
+        /* رأس الصفحة والرصيد */
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); padding: 12px 18px; border-radius: 14px; border: 1px solid #1e293b; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .balance-display { font-size: 17px; font-weight: bold; color: var(--accent-gold); }
+
+        /* شريط التنقل الاحترافي */
+        .nav-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 15px; scrollbar-width: none; }
+        .nav-bar::-webkit-scrollbar { display: none; }
+        .nav-btn { background: var(--bg-panel); border: 1px solid #1e293b; color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .nav-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); box-shadow: 0 0 12px rgba(245, 158, 11, 0.4); }
 
         .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--bg-card); border: 1px solid #30363d; border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-        
-        /* لوحة التحكم بالرهان */
-        .bet-control { display: flex; gap: 10px; margin: 12px 0; align-items: center; justify-content: center; }
-        .bet-input { background: #0b0e14; border: 1px solid #30363d; color: #fff; padding: 10px; border-radius: 8px; width: 100px; text-align: center; font-size: 16px; font-weight: bold; }
-        .bet-btn-quick { background: #21262d; border: 1px solid #30363d; color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        
-        button.action-btn { background: linear-gradient(135deg, #f3ba2f, #d49e1a); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 15px rgba(243, 186, 47, 0.3); }
-        button.action-btn:active { transform: scale(0.98); }
+        .card { background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
 
-        /* شاشة العرض والألعاب الحية */
-        .screen-box { background: #0b0e14; border: 2px solid #30363d; border-radius: 12px; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; position: relative; overflow: hidden; margin-bottom: 10px; }
+        /* عناصر التحكم بالرهان */
+        .bet-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin: 12px 0; }
+        .bet-input { background: #050811; border: 1px solid #1e293b; color: #fff; padding: 10px; border-radius: 10px; width: 110px; text-align: center; font-size: 16px; font-weight: bold; }
+        .quick-btn { background: #1e293b; border: none; color: #fff; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         
-        /* الطائرة (Aviator Style) */
-        #aviator-plane { position: absolute; font-size: 40px; transition: 0.1s linear; left: 20px; bottom: 20px; }
-        
-        /* السلوتس الحقيقي */
-        .slots-container { display: flex; justify-content: center; gap: 10px; font-size: 40px; }
-        .slot-reel { background: #161b22; border: 1px solid #30363d; padding: 10px 20px; border-radius: 8px; min-width: 70px; }
+        .main-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); transition: 0.1s; }
+        .main-btn:active { transform: scale(0.98); }
 
-        /* سجل النتائج والـ History */
-        .history-bar { display: flex; gap: 5px; overflow-x: auto; margin-top: 10px; padding: 5px 0; }
-        .history-item { background: #21262d; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text-muted); }
+        /* شاشات الألعاب بالـ Canvas والحداثة */
+        .game-canvas-box { background: #050811; border: 2px solid #1e293b; border-radius: 12px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        
+        /* شبكة المناجم والألعاب */
+        .grid-25 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 290px; margin: 0 auto; }
+        .cell-item { background: #1e293b; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; border: 1px solid #334155; }
+        .cell-item:active { background: #334155; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div>🎲 <b>1xCasino Live</b></div>
-        <div class="balance-box">💰 <span id="balance">1000.00</span> $</div>
+        <div>⚡ <b>1xCasino Pro</b></div>
+        <div class="balance-display">💰 <span id="balance">1000.00</span> $</div>
     </div>
 
-    <!-- شريط الألعاب -->
-    <div class="games-nav">
-        <button class="game-tab active" onclick="switchGame('aviator', event)">✈️ Aviator</button>
-        <button class="game-tab" onclick="switchGame('slots', event)">🎰 777 Slots</button>
-        <button class="game-tab" onclick="switchGame('roulette', event)">🎡 Roulette</button>
-        <button class="game-tab" onclick="switchGame('mines', event)">💣 Mines</button>
+    <!-- شريط التنقل للألعاب -->
+    <div class="nav-bar">
+        <button class="nav-btn active" onclick="switchGame('aviator', event)">✈️ Aviator</button>
+        <button class="nav-btn" onclick="switchGame('slots', event)">🎰 Slots 777</button>
+        <button class="nav-btn" onclick="switchGame('roulette', event)">🎡 Roulette</button>
+        <button class="nav-btn" onclick="switchGame('mines', event)">💣 Mines</button>
     </div>
 
-    <!-- 1. لعبة الطائرة (Aviator) -->
+    <!-- 1. لعبة الطائرة (Aviator Pro) -->
     <div id="aviator" class="section active">
         <div class="card">
-            <div class="screen-box" id="aviator-screen">
-                <div id="aviator-mult" style="color: var(--accent-green);">1.00x</div>
-                <div id="aviator-plane">✈️</div>
+            <div class="game-canvas-box">
+                <canvas id="aviatorCanvas" width="320" height="180"></canvas>
+                <div id="aviator-text" style="position:absolute; font-size: 32px; font-weight:bold; color:var(--accent-green);">1.00x</div>
             </div>
-            <div class="bet-control">
+            <div class="bet-row">
                 <span>الرهان:</span>
-                <input type="number" id="aviator-bet" class="bet-input" value="10">
-                <button class="bet-btn-quick" onclick="setBet('aviator-bet', 10)">10</button>
-                <button class="bet-btn-quick" onclick="setBet('aviator-bet', 50)">50</button>
-                <button class="bet-btn-quick" onclick="setBet('aviator-bet', 100)">100</button>
+                <input type="number" id="bet-aviator" class="bet-input" value="10">
+                <button class="quick-btn" onclick="setVal('bet-aviator', 10)">10</button>
+                <button class="quick-btn" onclick="setVal('bet-aviator', 50)">50</button>
+                <button class="quick-btn" onclick="setVal('bet-aviator', 100)">100</button>
             </div>
-            <button class="action-btn" id="aviator-btn" onclick="startAviator()">إقلاع الطائرة (رهان)</button>
+            <button class="main-btn" id="aviator-action-btn" onclick="toggleAviator()">بدء الإقلاع (رهان)</button>
         </div>
     </div>
 
-    <!-- 2. السلوتس (Slots) -->
+    <!-- 2. سلوتس كازينو حقيقي (Slots Pro) -->
     <div id="slots" class="section">
         <div class="card">
-            <div class="screen-box">
-                <div class="slots-container">
-                    <div class="slot-reel" id="r1">🍋</div>
-                    <div class="slot-reel" id="r2">🍒</div>
-                    <div class="slot-reel" id="r3">💎</div>
-                </div>
+            <div class="game-canvas-box" style="font-size: 45px; gap: 15px; display:flex;">
+                <span id="s1">🍋</span>
+                <span id="s2">🍒</span>
+                <span id="s3">💎</span>
             </div>
-            <div class="bet-control">
+            <div class="bet-row">
                 <span>الرهان:</span>
-                <input type="number" id="slots-bet" class="bet-input" value="20">
+                <input type="number" id="bet-slots" class="bet-input" value="25">
             </div>
-            <button class="action-btn" style="background:linear-gradient(135deg, #0ecb81, #069c61); color:#fff;" onclick="playSlots()">تدوير الحظ (Spin)</button>
+            <button class="main-btn" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff;" onclick="playSlots()">تدوير الماكينة (Spin)</button>
         </div>
     </div>
 
-    <!-- 3. الروليت (Roulette) -->
+    <!-- 3. الروليت (Roulette Pro) -->
     <div id="roulette" class="section">
         <div class="card">
-            <div class="screen-box" id="roulette-wheel" style="color: var(--accent-gold);">
-                🎡 جاهز للتدوير
+            <div class="game-canvas-box" id="roulette-screen" style="font-size: 24px; font-weight:bold; color:var(--accent-gold);">
+                🎡 اختر اللون لمضاعفة رصيدك
             </div>
-            <div class="bet-control">
-                <input type="number" id="roul-bet" class="bet-input" value="25">
+            <div class="bet-row">
+                <input type="number" id="bet-roulette" class="bet-input" value="20">
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="action-btn" style="background:var(--accent-red); color:#fff;" onclick="playRoulette('red')">رهان أحمر (x2)</button>
-                <button class="action-btn" style="background:#21262d; color:#fff; border:1px solid #30363d;" onclick="playRoulette('black')">رهان أسود (x2)</button>
+            <div style="display:flex; gap:10px;">
+                <button class="main-btn" style="background:var(--accent-red); color:#fff; margin-top:0;" onclick="playRoulette('red')">🔴 أحمر (x2)</button>
+                <button class="main-btn" style="background:#1e293b; color:#fff; border:1px solid #334155; margin-top:0;" onclick="playRoulette('black')">⚫ أسود (x2)</button>
             </div>
         </div>
     </div>
 
-    <!-- 4. المناجم (Mines) -->
+    <!-- 4. المناجم الاحترافية (Mines Pro) -->
     <div id="mines" class="section">
         <div class="card">
-            <p style="font-size: 13px; color: var(--text-muted);">تجنب القنابل واجمع المضاعفات الحقيقية!</p>
-            <div id="mines-grid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px; max-width:280px; margin:10px auto;"></div>
-            <button class="action-btn" onclick="resetMines()">إعادة تعيين المنجم</button>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">تجنب القنابل واجمع الجواهر (نظام Haus Edge آمن)</p>
+            <div class="grid-25" id="mines-grid"></div>
+            <button class="main-btn" style="margin-top: 15px;" onclick="initMines()">إعادة تعيين المنجم</button>
         </div>
     </div>
 
@@ -142,137 +134,197 @@
             document.getElementById('balance').innerText = balance.toFixed(2);
         }
 
-        function switchGame(gameId, event) {
+        function haptic(type = 'light') {
+            try {
+                if(tg && tg.HapticFeedback) {
+                    if(type === 'heavy') tg.HapticFeedback.impactOccurred('heavy');
+                    else if(type === 'med') tg.HapticFeedback.impactOccurred('medium');
+                    else tg.HapticFeedback.selectionChanged();
+                }
+            } catch(e){}
+        }
+
+        function switchGame(id, e) {
+            haptic('light');
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(gameId).classList.add('active');
-            event.target.classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            e.target.classList.add('active');
         }
 
-        function setBet(inputId, val) {
-            document.getElementById(inputId).value = val;
-        }
+        function setVal(id, val) { document.getElementById(id).value = val; }
 
-        // 1. منطق لعبة الطائرة الواقعية (Aviator)
+        /* --- 1. طائرة Aviator بالـ Canvas ومحرك House Edge --- */
+        const canvas = document.getElementById('aviatorCanvas');
+        const ctx = canvas.getContext('2d');
         let aviatorInterval = null;
-        function startAviator() {
-            let bet = parseFloat(document.getElementById('aviator-bet').value);
-            if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
-            balance -= bet;
-            updateUI();
+        let isFlying = false;
+        let currentMult = 1.00;
+        let crashAt = 1.00;
+        let currentBet = 0;
 
-            let btn = document.getElementById('aviator-btn');
-            btn.innerText = "سحب الأرباح (Cash Out)";
-            btn.style.background = "var(--accent-green)";
-            
-            let mult = 1.00;
-            let multBox = document.getElementById('aviator-mult');
-            let plane = document.getElementById('aviator-plane');
-            let crashPoint = (Math.random() * 3 + 1.1).toFixed(2); // نقطة الانهيار العشوائية
-
-            let cashedOut = false;
-            btn.onclick = function() {
-                if (!cashedOut && mult < crashPoint) {
-                    cashedOut = true;
-                    let win = bet * mult;
-                    balance += win;
-                    updateUI();
-                    alert(`✅ تم السحب بنجاح! ربحت: ${win.toFixed(2)}$`);
-                    resetAviatorBtn();
-                }
-            };
-
-            aviatorInterval = setInterval(() => {
-                mult += 0.05;
-                multBox.innerText = mult.toFixed(2) + "x";
-                plane.style.left = Math.min(220, (mult * 40)) + "px";
-                plane.style.bottom = Math.min(110, (mult * 25)) + "px";
-
-                if (mult >= crashPoint && !cashedOut) {
-                    clearInterval(aviatorInterval);
-                    multBox.innerHTML = "<span style='color:var(--accent-red)'>طارت الطائرة! (Crash)</span>";
-                    resetAviatorBtn();
-                }
-            }, 100);
+        function drawFlight(progress) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // رسم المسار البياني
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            ctx.lineTo(canvas.width * progress, canvas.height - (canvas.height * progress * 0.8));
+            ctx.stroke();
         }
 
-        function resetAviatorBtn() {
-            clearInterval(aviatorInterval);
-            let btn = document.getElementById('aviator-btn');
-            btn.innerText = "إقلاع الطائرة (رهان)";
-            btn.style.background = "var(--accent-gold)";
-            btn.onclick = startAviator;
-        }
+        function toggleAviator() {
+            let btn = document.getElementById('aviator-action-btn');
+            if (!isFlying) {
+                currentBet = parseFloat(getElementByIdVal('bet-aviator'));
+                if (balance < currentBet) { alert("رصيد غير كافٍ!"); return; }
+                balance -= currentBet;
+                updateUI();
+                haptic('med');
 
-        // 2. سلوتس كازينو حقيقي
-        function playSlots() {
-            let bet = parseFloat(document.getElementById('slots-bet').value);
-            if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
-            balance -= bet;
-            updateUI();
+                isFlying = true;
+                currentMult = 1.00;
+                // خوارزمية تضمن خسارة اللاعب بنسبة عالية لربح المنصة (House Edge قاسي)
+                let rand = Math.random();
+                if (rand < 0.60) crashAt = (Math.random() * 0.3 + 1.05).toFixed(2); // سقوط مبكر جداً
+                else if (rand < 0.90) crashAt = (Math.random() * 1.5 + 1.35).toFixed(2); // سقوط متوسط
+                else crashAt = (Math.random() * 5.0 + 3.0).toFixed(2); // صعود عالي نادر
 
-            let symbols = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
-            let r1 = symbols[Math.floor(Math.random()*symbols.length)];
-            let r2 = symbols[Math.floor(Math.random()*symbols.length)];
-            let r3 = symbols[Math.floor(Math.random()*symbols.length)];
+                btn.innerText = "سحب الأرباح (Cash Out)";
+                btn.style.background = "var(--accent-green)";
+                btn.style.color = "#fff";
 
-            document.getElementById('r1').innerText = r1;
-            document.getElementById('r2').innerText = r2;
-            document.getElementById('r3').innerText = r3;
+                let progress = 0;
+                aviatorInterval = setInterval(() => {
+                    currentMult += 0.04;
+                    progress += 0.02;
+                    document.getElementById('aviator-text').innerText = currentMult.toFixed(2) + "x";
+                    drawFlight(Math.min(1, progress));
 
-            if (r1 === r2 && r2 === r3) {
-                let win = bet * 10;
+                    if (currentMult >= crashAt) {
+                        endAviator(false);
+                    }
+                }, 100);
+
+            } else {
+                // عملية السحب الناجحة من قبل المستخدم
+                let win = currentBet * currentMult;
                 balance += win;
                 updateUI();
-                alert(`🎉 مبروك! مطابقة كبرى ربحت ${win}$`);
+                haptic('heavy');
+                alert(`🎉 كفو! ربحت ${win.toFixed(2)}$`);
+                endAviator(true);
             }
         }
 
-        // 3. روليت كازينو
-        function playRoulette(color) {
-            let bet = parseFloat(document.getElementById('roul-bet').value);
+        function endAviator(success) {
+            clearInterval(aviatorInterval);
+            isFlying = false;
+            let txt = document.getElementById('aviator-text');
+            if (!success) {
+                txt.innerHTML = "<span style='color:var(--accent-red)'>طارت الطائرة (Crash)</span>";
+                haptic('heavy');
+            } else {
+                txt.innerHTML = "<span style='color:var(--accent-green)'>تم السحب</span>";
+            }
+            let btn = document.getElementById('aviator-action-btn');
+            btn.innerText = "بدء الإقلاع (رهان)";
+            btn.style.background = "linear-gradient(135deg, #f59e0b, #d97706)";
+            btn.style.color = "#000";
+        }
+
+        function getElementVal(id) { return document.getElementById(id).value; }
+
+        /* --- 2. سلوتس الحظ الاحترافي --- */
+        function playSlots() {
+            let bet = parseFloat(getElementVal('bet-slots'));
             if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
             balance -= bet;
             updateUI();
+            haptic('med');
 
-            let wheel = document.getElementById('roulette-wheel');
-            wheel.innerText = "🎡 تدور العجلة...";
+            let syms = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
+            // نسبة House Edge تمنح التطابق بنسبة قليلة جداً لصالح المنصة
+            let winCondition = Math.random() < 0.25; 
+            let s1, s2, s3;
+            if (winCondition) {
+                s1 = s2 = s3 = syms[Math.floor(Math.random() * syms.length)];
+            } else {
+                s1 = syms[Math.floor(Math.random() * syms.length)];
+                s2 = syms[Math.floor(Math.random() * syms.length)];
+                s3 = syms[Math.floor(Math.random() * syms.length)];
+                if(s1 === s2 && s2 === s3) s3 = '⚡'; // كسر المطابقة لصالح المنصة
+            }
 
-            setTimeout(() => {
-                let res = Math.random() > 0.5 ? 'red' : 'black';
-                let resText = res === 'red' ? '🔴 أحمر' : '⚫ أسود';
-                wheel.innerHTML = `النتيجة: ${resText}`;
-                if (res === color) {
-                    balance += (bet * 2);
-                    updateUI();
-                }
-            }, 1000);
+            document.getElementById('s1').innerText = s1;
+            document.getElementById('s2').innerText = s2;
+            document.getElementById('s3').innerText = s3;
+
+            if (s1 === s2 && s2 === s3) {
+                let prize = bet * 8;
+                balance += prize;
+                updateUI();
+                haptic('heavy');
+                alert(`🚀 مطابقة كبرى! ربحت ${prize}$`);
+            }
         }
 
-        // 4. المناجم الاحترافية
+        /* --- 3. الروليت الاحترافية --- */
+        function playRoulette(color) {
+            let bet = parseFloat(getElementVal('bet-roulette'));
+            if (balance < bet) { alert("رصيد غير كافٍ!"); return; }
+            balance -= bet;
+            updateUI();
+            haptic('med');
+
+            let screen = document.getElementById('roulette-screen');
+            screen.innerText = "🎡 تدور العجلة...";
+
+            setTimeout(() => {
+                // House Edge يجعل نسبة خسارة اللون أعلى بقليل
+                let win = Math.random() < 0.46;
+                let resColor = win ? color : (color === 'red' ? 'black' : 'red');
+                let resText = resColor === 'red' ? '🔴 أحمر' : '⚫ أسود';
+
+                screen.innerHTML = `النتيجة: ${resText}`;
+                if (resColor === color) {
+                    balance += (bet * 2);
+                    updateUI();
+                    haptic('heavy');
+                } else {
+                    haptic('light');
+                }
+            }, 800);
+        }
+
+        /* --- 4. المناجم الاحترافية --- */
         const minesGrid = document.getElementById('mines-grid');
-        function resetMines() {
+        function initMines() {
             minesGrid.innerHTML = '';
-            for(let i=0; i<20; i++) {
+            for (let i = 0; i < 25; i++) {
                 let cell = document.createElement('div');
-                cell.className = 'slot-reel';
-                cell.style.height = '42px';
-                cell.style.fontSize = '16px';
-                cell.style.display = 'flex';
-                cell.style.alignItems = 'center';
-                cell.style.justifyContent = 'center';
-                cell.style.cursor = 'pointer';
+                cell.className = 'cell-item';
                 cell.innerText = '❓';
                 cell.onclick = () => {
-                    let isGem = Math.random() > 0.35;
-                    cell.innerText = isGem ? '💎' : '💣';
-                    cell.style.background = isGem ? '#065f46' : '#7f1d1d';
-                    if(isGem) { balance += 5; updateUI(); }
+                    haptic('light');
+                    // نسبة قنابل عالية لضمان ربحية المنصة
+                    let isBomb = Math.random() < 0.40;
+                    if (isBomb) {
+                        cell.innerText = '💣';
+                        cell.style.background = '#7f1d1d';
+                        haptic('heavy');
+                    } else {
+                        cell.innerText = '💎';
+                        cell.style.background = '#065f46';
+                        balance += 4;
+                        updateUI();
+                    }
                 };
                 minesGrid.appendChild(cell);
             }
         }
-        resetMines();
+        initMines();
     </script>
 </body>
 </html>
